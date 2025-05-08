@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Click to Start Expiriment</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        button {
+            padding: 20px 40px;
+            font-size: 24px;
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        button:hover {
+            background-color: #888;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(-5px) rotate(-2deg); }
+            50% { transform: translateX(5px) rotate(2deg); }
+        }
+        @keyframes minimize {
+            0% { transform: scale(1); }
+            100% { transform: scale(0.1) translate(300%, 300%); }
+        }
+    </style>
+</head>
+<body>
+    <button onclick="openChaos()">Click to Start</button>
+    <script>
+        function openChaos() {
+            const tab = window.open('https://jonathanaft.github.io/lol/example.mp4', '', 'width=300,height=300');
+            tab.focus();
+            tab.moveTo(Math.random() * (window.screen.width - 300), Math.random() * (window.screen.height - 300));
+            setInterval(() => {
+                tab.moveTo(Math.random() * (window.screen.width - 300), Math.random() * (window.screen.height - 300));
+            }, 100);
+        }
+    </script>
+</body>
+</html>
