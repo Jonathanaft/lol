@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏔️ Happy Pebble</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #b0e0e6;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    .game-container {
+      position: relative;
+      width: 800px;
+      height: 500px;
+      background-color: #66cc66;
+      border: 4px solid #006400;
+      border-radius: 10px;
+    }
+    .platform {
+      position: absolute;
+      background-color: #8b4513;
+      height: 10px;
+      border-radius: 5px;
+    }
+    .leg {
+      position: absolute;
+      background-color: red;
+      height: 20px;
+    }
+    .pebble {
+      position: absolute;
+      background-color: gray;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+    .game-over {
+      text-align: center;
+      color: red;
+      font-size: 24px;
+    }
+    .guide {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 16px;
+    }
+    .restart-button {
+      background-color: #008CBA;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    .restart-button:hover {
+      background-color: #005f73;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="game-container" id="game-container">
+    <div class="platform" id="platform1" style="left: 50px; top: 300px; width: 200px;"></div>
+    <div class="platform" id="platform2" style="left: 300px; top: 250px; width: 150px;"></div>
+    <div class="platform" id="platform3" style="left: 500px; top: 350px; width: 200px;"></div>
+
+    <div class="leg" id="leg1" style="left: 200px; top: 400px; width: 50px;"></div>
+    <div class="leg" id="leg2" style="left: 400px; top: 400px; width: 50px;"></div>
+
+    <div class="pebble" id="pebble" style="left: 100px; top: 300px;"></div>
+  </div>
+
+  <div class="guide">
+    <p>🏃 Use Arrow Keys to Move</p>
+    <p>⏳ Press Spacebar to Jump</p>
+    <p>🚷 Avoid the Legs!</p>
+  </div>
+
+  <div class="game-over" id="game-over" style="display: none;">
+    <p>Game Over! Press "R" to Restart</p>
+  </div>
+
+  <button class="restart-button" id="restart-button" style="display: none;" onclick="restartGame()">Restart</button>
+
+  <script>
+    const pebble = document.getElementById('pebble');
+    const gameContainer = document.getElementById('game-container');
+    const gameOverElement = document.getElementById('game-over');
+    const restartButton = document.getElementById('restart-button');
+
+    let pebbleX = 100;
+    let pebbleY = 300;
+    let velocityY = 0;
+    let isJumping = false;
+    let gameOver = false;
+
+    const gravity = 1;
+    const jumpPower = -15;
+    const groundLevel = 450;
+
+    const platforms = [
+      { x: 50, y: 300, width: 200 },
+      { x: 300, y: 250, width: 150 },
+      { x: 500, y: 350, width: 200 }
+    ];
+
+    const legs = [
+      { x: 200, y: 400, width: 50, speed: 2 },
+      { x: 400, y: 400, width: 50, speed: -2 }
+    ];
+
+    const handleJump = () => {
+      if (!isJumping && !gameOver) {
+        velocityY = jumpPower;
+        isJumping = true;
+      }
+    };
+
+    const handleMovement = (e) => {
+      if (e.key === ' ' && !gameOver) handleJump();
+      if (e.key === 'ArrowRight' && !gameOver) pebbleX = Math.min(pebbleX + 20, 740);
+      if (e.key === 'ArrowLeft' && !gameOver) pebbleX = Math.max(pebbleX - 20, 0);
+    };
+
+    const updateGame = () => {
+      if (gameOver) return;
+
+      // Apply gravity
+      velocityY += gravity;
+      pebbleY = Math.min(groundLevel - 40, pebbleY + velocityY);
+
+      // Check for platform collisions
+      platforms.forEach(platform => {
+        if (
+          pebbleX + 40 > platform.x &&
+          pebbleX < platform.x + platform.width &&
+          pebbleY + 40 >= platform.y &&
+          pebbleY + 40 <= platform.y + 10
+        ) {
+          velocityY = 0;
+          pebbleY = platform.y - 40;
+          isJumping = false;
+        }
+      });
+
+      // Check for leg collisions
+      legs.forEach(leg => {
+        if (
+          pebbleX + 40 > leg.x &&
+          pebbleX < leg.x + leg.width &&
+          pebbleY + 40 >= leg.y
+        ) {
+          gameOver = true;
+          gameOverElement.style.display = 'block';
+          restartButton.style.display = 'inline-block';
+        }
+      });
+
+      // Update leg positions
+      legs.forEach(leg => {
+        leg.x += leg.speed;
+        if (leg.x <= 0 || leg.x >= 750) {
+          leg.speed *= -1;
+        }
+      });
+
+      // Update pebble position
+      pebble.style.left = `${pebbleX}px`;
+      pebble.style.top = `${pebbleY}px`;
+    };
+
+    const restartGame = () => {
+      gameOver = false;
+      pebbleX = 100;
+      pebbleY = 300;
+      velocityY = 0;
+      isJumping = false;
+      gameOverElement.style.display = 'none';
+      restartButton.style.display = 'none';
+      updateGame();
+    };
+
+    window.addEventListener('keydown', handleMovement);
+    setInterval(updateGame, 30);
+  </script>
+
+</body>
+</html>
